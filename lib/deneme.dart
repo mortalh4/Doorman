@@ -38,4 +38,32 @@ style: TextStyle(color: Colors.teal, fontSize: 32),
 ),
 );
 }),
-);*/
+);
+
+
+ElevatedButton(onPressed: (){
+            final user = userModel(userNameController.text, apartmentNoController.text);
+            widget.addUser(user);
+          }, child: Text("ekle"))
+
+
+
+
+
+
+
+ListView.builder(
+              itemBuilder: (context, index) {
+                return Card(
+                  margin: EdgeInsets.all(4),
+                  child: ListTile(
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => allExpensesScreen()));
+                    },
+                    title: Text(userList[index].userName),
+                    subtitle: Text(userList[index].apartmentNo),
+                  ),
+                );
+              },
+              itemCount: userList.length)
+*/

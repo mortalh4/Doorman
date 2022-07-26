@@ -1,4 +1,4 @@
-import 'package:doorman_app/home_page.dart';
+import 'package:doorman_app/HomePage/home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';

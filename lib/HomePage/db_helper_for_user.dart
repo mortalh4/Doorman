@@ -25,7 +25,7 @@ class databaseHelperForUser {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE users(
-    id INTEGER PRIMARY KEY AUTOINCREMENT
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     userName TEXT,
     apartmentNo TEXT
     )

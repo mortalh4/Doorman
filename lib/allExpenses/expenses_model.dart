@@ -1,6 +1,22 @@
+import 'package:sqflite/sqflite.dart';
 class expensesModel{
-  String harcamaAdi;
-  double harcamaMiktari;
+  final int? harcamaId;
+  final String harcamaAdi;
+  final String harcamaMiktari;
 
-  expensesModel(this.harcamaAdi, this.harcamaMiktari);
+  expensesModel({this.harcamaId, required this.harcamaAdi, required this.harcamaMiktari});
+
+  factory expensesModel.fromMap(Map <String , dynamic> json) => new expensesModel(
+    harcamaId: json['harcamaId'],
+    harcamaAdi: json['harcamaAdi'],
+    harcamaMiktari: json['harcamaMiktari'],
+  );
+
+  Map<String , dynamic> toMap() {
+    return{
+      'harcamaId' : harcamaId,
+      'harcamaAdi' : harcamaAdi,
+      'harcamaMiktari' : harcamaMiktari,
+    };
+}
 }

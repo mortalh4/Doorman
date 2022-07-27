@@ -1,11 +1,12 @@
+import 'package:doorman_app/shoppingList/db_helper_for_shoppingList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'item_model.dart';
 
 class addItemDialog extends StatefulWidget {
-  final Function(itemModel) addItem;
-  const addItemDialog({Key? key, required this.addItem}) : super(key: key);
+
+  const addItemDialog({Key? key}) : super(key: key);
 
   @override
 
@@ -22,11 +23,19 @@ class _addItemDialogState extends State<addItemDialog> {
         children: [
           Text("Alışveriş listesine malzeme ekle",
             style: TextStyle(fontWeight: FontWeight.bold),),
+
+
           buildTextField("Alınacak malzemeyi giriniz", itemNameController),
           buildTextField("Kaç adet/kilo alacağınızı giriniz", itemCountController),
-          ElevatedButton(onPressed: (){
-            final item = itemModel(itemNameController.text,itemCountController.text);
-            widget.addItem(item);
+
+          ElevatedButton(onPressed: ()async{
+            await databaseHelperForShoppingList.instance.add(
+                itemModel(alinacakUrunAdi: itemNameController.text, urunAdedi: itemCountController.text),
+            );
+            setState(() {
+              itemNameController.clear();
+              itemCountController.clear();
+            });
           }, child: Text("ekle"))
         ],
       ),

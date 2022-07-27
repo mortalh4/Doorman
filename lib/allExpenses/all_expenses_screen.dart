@@ -1,6 +1,7 @@
 
 
 import 'package:doorman_app/HomePage/userModel.dart';
+import 'package:doorman_app/allExpenses/db_helper_for_expenses.dart';
 import 'package:doorman_app/allExpenses/expenses_model.dart';
 import 'package:doorman_app/allExpenses/show_added_expenses.dart';
 import 'package:doorman_app/shoppingList/shopping_list_screen.dart';
@@ -17,10 +18,13 @@ class allExpensesScreen extends StatefulWidget {
 
 class _allExpensesScreenState extends State<allExpensesScreen> {
 
+
   List<expensesModel> expensesList = [];
   String? girilenHarcama = "boş değer";
   double harcamamMiktari = 0;
   var formKey = GlobalKey<FormState>();
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,7 +34,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
           leading: BackButton(onPressed: (){
             Navigator.pop(context);
           },),
-            title: Text("Harcamalar"),
+            title: Text(widget.user.userName),
             backgroundColor: Colors.teal,
             centerTitle: true),
         body: Column(
@@ -46,29 +50,30 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
               ],
             ),
             Expanded(
-              child:expensesList.length > 0? Container(
+              child: Container(
                 height: MediaQuery.of(context).size.height*0.60,
-                child: ListView.builder(itemCount: expensesList.length,itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Card(
-                      margin: EdgeInsets.all(4),
-                      child: ListTile(
-                        title: Text(expensesList[index].harcamaAdi),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.teal,
-                          child: Text(expensesList[index].harcamaMiktari.toString()),
-                        ),
-                        onTap: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => shoppingListScreen()));
-                        },
-                      ),
-                    ),
-                  );
-                }
-                )
-              ): Container(
-                child: Center(child: Text("Lütfen harcama ekleyin"),),
+                child: FutureBuilder<List<expensesModel>>(
+                  future: databasehelperForExpenses.instance.getExpensesModel(),
+                  builder: (BuildContext context, AsyncSnapshot<List<expensesModel>> snapshot){
+                    if (!snapshot.hasData){
+                      print(snapshot.hasData);
+                      print(snapshot.data?.isEmpty);
+
+                      return Center(child: Text("yükleniyor"),);
+                    }
+                    return snapshot.data!.isEmpty
+                        ? Center(child: Text("lütfen harcama ekleyin"),): ListView(
+
+                      children: snapshot.data!.map((e) {
+                        return buildCenter(e);
+                      }
+                      ).toList(),
+                    );
+
+
+
+                  },
+                ),
               )
               ),
               ]
@@ -82,11 +87,23 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
     double toplamHarcama = 0;
 
     expensesList.forEach((element) {
-      toplamHarcama = toplamHarcama + element.harcamaMiktari;
+      double? value = double.tryParse(element.harcamaMiktari);
+      toplamHarcama = toplamHarcama + value!;
     });
     return toplamHarcama;
   }
-  _buildTextFormFieldforText(){
+  Center buildCenter(expensesModel e) {
+    return Center(
+      child: ListTile(
+        onTap: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> shoppingListScreen(expenses: e,)));
+        },
+        title: Text(e.harcamaAdi, style:  TextStyle(color: Colors.black),),
+        subtitle: Text(e.harcamaMiktari.toString()),
+      ),
+    );
+  }
+  _buildTextFormFieldforText(TextEditingController controller){
     return TextFormField(
       decoration: InputDecoration(
 
@@ -97,21 +114,17 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
       ) ,
 
       autofocus: true,
-      onSaved: (deger){
-        setState(() {
-          girilenHarcama = deger!;
-          print(girilenHarcama);
-        });
-      },
+
       validator: (s){
         if(s!.length <=0){
           return "bu alanı boş bırakmayınız";
         }
         else return null;
       },
+      controller: controller,
     );
   }
-  _buildTextFieldforDouble(){
+  _buildTextFieldforDouble(TextEditingController controller){
     return TextFormField(
       decoration: InputDecoration(
 
@@ -119,12 +132,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
         labelText: "Tutar",
       ) ,
       keyboardType: TextInputType.number,
-      onSaved: (deger){
-        setState(() {
-          harcamamMiktari = double.tryParse(deger!)!;
-          print(harcamamMiktari);
-        });
-      },
+
 
       validator: (s){
         if(s!.length <=0){
@@ -132,6 +140,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
         }
         else return null;
       },
+      controller: controller,
     );
   }
 
@@ -142,7 +151,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(padding: EdgeInsets.fromLTRB(8, 12, 8, 8),
-            child: _buildTextFormFieldforText(),),
+            child: _buildTextFormFieldforText(expensesName),),
 
             SizedBox(
               height: 5,
@@ -154,7 +163,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
                 Expanded(
                   flex: 9,
 
-                  child:Padding(child:_buildTextFieldforDouble(),
+                  child:Padding(child:_buildTextFieldforDouble(expensesValue),
                       padding: EdgeInsets.symmetric(horizontal: 8),
     )
                 ),
@@ -163,15 +172,19 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
                   flex: 4,
                   child: Padding(
                     padding:  EdgeInsets.symmetric(horizontal: 8),
-                    child: IconButton(onPressed: (){
-                      if(formKey.currentState!.validate()){
-                        formKey.currentState!.save();
-                        var eklenecekHarcama = expensesModel(girilenHarcama!, harcamamMiktari);
-                        expensesList.add(eklenecekHarcama);
-                        toplamHesapla();
-                        print(girilenHarcama);
-                      }
+                    child: IconButton(onPressed: () async {
+                      print("********************");
 
+
+                      print(expensesValue.text );
+                      print(expensesName.text );
+                      print("********************");
+                      await databasehelperForExpenses.instance.add(
+                          expensesModel(harcamaAdi: expensesName.text, harcamaMiktari: expensesValue.text));
+                      setState(() {
+                        expensesName.clear();
+                        expensesValue.clear();
+                      });
                     }, icon: Icon(Icons.arrow_forward_ios_rounded),color: Colors.teal,iconSize: 32),
                   ),
                 )
@@ -183,6 +196,8 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
         )
     );
   }
+  var expensesName = TextEditingController();
+  var expensesValue = TextEditingController();
 }
 
 /*

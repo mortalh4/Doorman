@@ -1,26 +1,24 @@
+import 'package:doorman_app/shoppingList/db_helper_for_shoppingList.dart';
 import 'package:doorman_app/shoppingList/item_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../allExpenses/expenses_model.dart';
 import 'add_item_dialog.dart';
 
 class shoppingListScreen extends StatefulWidget {
-  const shoppingListScreen({Key? key}) : super(key: key);
+  final expensesModel expenses;
+  const shoppingListScreen({Key? key, required this.expenses}) : super(key: key);
 
   @override
   State<shoppingListScreen> createState() => _shoppingListScreenState();
 }
 
 class _shoppingListScreenState extends State<shoppingListScreen> {
-  List<itemModel> itemList = [];
+
 
   @override
   Widget build(BuildContext context) {
-    void addItemData(itemModel item) {
-      setState(() {
-        itemList.add(item);
-      });
-    }
 
     void showItemDialog() {
       print("tıklandı");
@@ -28,7 +26,7 @@ class _shoppingListScreenState extends State<shoppingListScreen> {
           context: context,
           builder: (_) {
             return AlertDialog(
-              content: addItemDialog(addItem: addItemData),
+              content: addItemDialog(),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -52,25 +50,50 @@ class _shoppingListScreenState extends State<shoppingListScreen> {
             },
           ),
           backgroundColor: Colors.teal,
-          title: Text("Malzeme listesi"),
+          title: Text(widget.expenses.harcamaAdi),
           centerTitle: true,
         ),
         body: Container(
           height: MediaQuery.of(context).size.height * 0.75,
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return Card(
-                margin: EdgeInsets.all(4),
-                child: ListTile(
-                  title: Text(itemList[index].alinacakUrunAdi),
-                  subtitle: Text(itemList[index].urunAdedi),
-                ),
+          child: FutureBuilder<List<itemModel>>(
+            future: databaseHelperForShoppingList.instance.getItemModel(),
+            builder: (BuildContext context, AsyncSnapshot<List<itemModel>> snapshot){
+              if (!snapshot.hasData){
+                print(snapshot.hasData);
+                print(snapshot.data?.isEmpty);
+
+                return Center(child: Text("yükleniyor"),);
+              }
+              return snapshot.data!.isEmpty
+                  ? Center(child: Text("Henüz malzeme eklemedin"),):ListView(
+
+                children: snapshot.data!.map((e) {
+                  return buildCenter(e);
+                }
+                ).toList(),
               );
+
+
+
             },
-            itemCount: itemList.length,
           ),
         ),
       ),
     );
   }
+  Center buildCenter(itemModel e) {
+    return Center(
+      child: ListTile(
+        title: Text(e.alinacakUrunAdi),
+        subtitle: Text(e.urunAdedi),
+      ),
+    );
+  }
 }
+
+
+
+
+
+
+

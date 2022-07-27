@@ -66,4 +66,43 @@ ListView.builder(
                 );
               },
               itemCount: userList.length)
+
+
+
+ListView.builder(itemCount: expensesList.length,itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Card(
+                      margin: EdgeInsets.all(4),
+                      child: ListTile(
+                        title: Text(expensesList[index].harcamaAdi),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.teal,
+                          child: Text(expensesList[index].harcamaMiktari.toString()),
+                        ),
+                        onTap: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => shoppingListScreen()));
+                        },
+                      ),
+                    ),
+                  );
+                }
+                )
+
+
+
+
+
+
+
+
+
+
+              if(formKey.currentState!.validate()){
+                        formKey.currentState!.save();
+                        var eklenecekHarcama = expensesModel(harcamaAdi:girilenHarcama! ,harcamaMiktari: harcamamMiktari );
+                        expensesList.add(eklenecekHarcama);
+                        toplamHesapla();
+                        print(girilenHarcama);
+                      }
 */

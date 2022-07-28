@@ -19,7 +19,12 @@ class databaseHelperForUser {
       path,
       version: 1,
       onCreate: _onCreate,
+      onConfigure: _onConfigure,
     );
+  }
+  _onConfigure(Database db) async {
+    // Add support for cascade delete
+    await db.execute("PRAGMA foreign_keys = ON");
   }
 
   Future _onCreate(Database db, int version) async {

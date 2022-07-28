@@ -1,3 +1,4 @@
+import 'package:doorman_app/Constants.dart';
 import 'package:doorman_app/HomePage/db_helper_for_user.dart';
 import 'package:doorman_app/HomePage/userModel.dart';
 import 'package:doorman_app/HomePage/add_user_dialog.dart';
@@ -39,16 +40,16 @@ class _homePageState extends State<homePage> {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primaryColor: Colors.teal),
+      theme: ThemeData(primaryColor: Constants.appColor),
       home: Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: showUserDialog,
             child: Icon(Icons.add),
-            backgroundColor: Colors.teal),
+            backgroundColor: Constants.appColor),
         appBar: AppBar(
 
-          backgroundColor: Colors.teal,
-          title: Text('Home Page'),
+          backgroundColor: Constants.appColor,
+          title: Center(child: Text('Home Page',style: Constants.pageHeader,)),
         ),
         body: Container(
           height: MediaQuery.of(context).size.height * 0.75,
@@ -82,6 +83,13 @@ class _homePageState extends State<homePage> {
   Center buildCenter(userModel e) {
     return Center(
                   child: ListTile(
+                    trailing: IconButton(onPressed: (){},
+                    icon: Icon(Icons.edit),color: Constants.appColor,),
+                    leading: CircleAvatar(
+                      backgroundColor: Constants.appColor,
+                      child: Icon(Icons.person),
+                    ),
+
                     onTap: (){
                       Navigator.of(context).push(MaterialPageRoute(builder: (context)=> allExpensesScreen(user: e)));
                     },

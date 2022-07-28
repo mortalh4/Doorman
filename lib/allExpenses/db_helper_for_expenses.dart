@@ -13,6 +13,9 @@ class databasehelperForExpenses{
   Future <Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'expenses.db');
+    print("********************");
+    print('db loc' + path);
+    print("********************");
     return await openDatabase(
       path,
       version: 1,
@@ -45,5 +48,9 @@ class databasehelperForExpenses{
   Future<int> add(expensesModel expenses) async {
     Database db = await instance.database;
     return await db.insert('expenses', expenses.toMap());
+  }
+  Future<int> remove(int harcamaId)async {
+    Database db = await instance.database;
+    return await db.rawDelete('DELETE FROM expenses WHERE harcamaId = $harcamaId');
   }
 }

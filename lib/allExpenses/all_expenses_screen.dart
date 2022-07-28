@@ -1,5 +1,6 @@
 
 
+import 'package:doorman_app/Constants.dart';
 import 'package:doorman_app/HomePage/userModel.dart';
 import 'package:doorman_app/allExpenses/db_helper_for_expenses.dart';
 import 'package:doorman_app/allExpenses/expenses_model.dart';
@@ -20,6 +21,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
 
 
   List<expensesModel> expensesList = [];
+  double toplamHarcama = 0;
   String? girilenHarcama = "boş değer";
   double harcamamMiktari = 0;
   var formKey = GlobalKey<FormState>();
@@ -34,8 +36,9 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
           leading: BackButton(onPressed: (){
             Navigator.pop(context);
           },),
-            title: Text(widget.user.userName),
-            backgroundColor: Colors.teal,
+            title: Text(widget.user.userName, style: Constants.pageHeader,),
+
+            backgroundColor: Constants.appColor,
             centerTitle: true),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -45,7 +48,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
               children: [
                 //_buildForm(),
                 Expanded(flex: 3,child: _buildForm()),
-                Expanded(flex: 1,child: Center(child: showAddedExpenses(toplamGoster: toplamHesapla()))),
+                Expanded(flex: 1,child: Center(child: showAddedExpenses(toplamGoster: toplamHarcama))),
 
               ],
             ),
@@ -65,6 +68,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
                         ? Center(child: Text("lütfen harcama ekleyin"),): ListView(
 
                       children: snapshot.data!.map((e) {
+
                         return buildCenter(e);
                       }
                       ).toList(),
@@ -83,18 +87,22 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
       );
   }
 
-   double toplamHesapla(){
-    double toplamHarcama = 0;
+   double toplamHesapla(double newValue){
 
-    expensesList.forEach((element) {
-      double? value = double.tryParse(element.harcamaMiktari);
-      toplamHarcama = toplamHarcama + value!;
-    });
+     toplamHarcama = toplamHarcama + newValue;
+
+
     return toplamHarcama;
   }
   Center buildCenter(expensesModel e) {
+    //toplamHesapla(double.tryParse(e.harcamaMiktari)!);
     return Center(
       child: ListTile(
+
+        trailing: IconButton(onPressed: (){setState(() {
+          databasehelperForExpenses.instance.remove(e.harcamaId!);
+        });},icon: Icon(Icons.delete, color: Constants.appColor,)),
+        leading: Icon(Icons.money,color: Constants.appColor, size: 32,),
         onTap: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> shoppingListScreen(expenses: e,)));
         },
@@ -107,10 +115,10 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
     return TextFormField(
       decoration: InputDecoration(
 
-        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        border: Constants.outlineBorderforFORM,
         hintText: "Market",
         filled: true,
-        fillColor: Colors.teal.shade100
+        fillColor: Constants.fillColor,
       ) ,
 
       autofocus: true,
@@ -128,7 +136,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
     return TextFormField(
       decoration: InputDecoration(
 
-        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        border: Constants.outlineBorderforFORM,
         labelText: "Tutar",
       ) ,
       keyboardType: TextInputType.number,
@@ -150,7 +158,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(padding: EdgeInsets.fromLTRB(8, 12, 8, 8),
+            Padding(padding: Constants.firstElementPadding,
             child: _buildTextFormFieldforText(expensesName),),
 
             SizedBox(
@@ -164,14 +172,14 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
                   flex: 9,
 
                   child:Padding(child:_buildTextFieldforDouble(expensesValue),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      padding: Constants.formPadding,
     )
                 ),
 
                 Expanded(
                   flex: 4,
                   child: Padding(
-                    padding:  EdgeInsets.symmetric(horizontal: 8),
+                    padding:  Constants.formPadding,
                     child: IconButton(onPressed: () async {
                       print("********************");
 
@@ -185,7 +193,9 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
                         expensesName.clear();
                         expensesValue.clear();
                       });
-                    }, icon: Icon(Icons.arrow_forward_ios_rounded),color: Colors.teal,iconSize: 32),
+                    }, icon: Constants.rightArrow,
+                       // color: Colors.teal,iconSize: 32
+                    ),
                   ),
                 )
 

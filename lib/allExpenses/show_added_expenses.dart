@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:doorman_app/Constants.dart';
 
 class showAddedExpenses extends StatelessWidget {
   double toplamGoster;
@@ -11,16 +12,13 @@ class showAddedExpenses extends StatelessWidget {
 
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: Constants.cardPadding,
             child: Center(child:Text("Toplam",style: TextStyle(
               fontWeight: FontWeight.w500,
 
             ),), ),
           ),
-          Text(toplamGoster > 0? "$toplamGoster":"0",style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 28,
-          ),),
+          Text(toplamGoster > 0? "$toplamGoster":"0",style: Constants.addedExpensesStyle,),
         ],
       ),
     );

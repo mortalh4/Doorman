@@ -13,6 +13,9 @@ class databasehelperForExpenses{
   Future <Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'expenses.db');
+    print("********************");
+    print('db loc' + path);
+    print("********************");
     return await openDatabase(
       path,
       version: 1,
@@ -25,23 +28,34 @@ class databasehelperForExpenses{
     harcamaId INTEGER PRIMARY KEY AUTOINCREMENT,
     harcamaAdi TEXT,
     harcamaMiktari TEXT,
-    id INTEGER,
-    FOREIGN KEY(id) REFERENCES users(id)
+    apartmentNo TEXT,
+    FOREIGN KEY(apartmentNo) REFERENCES users(apartmentNo)
     )
     ''');
   }
 
-  Future <List<expensesModel>> getExpensesModel() async {
+  /*Future <List<expensesModel>> getExpensesModel() async {
     Database db = await instance.database;
     var expenses = await db.query('expenses', orderBy: 'harcamaAdi');
     List<expensesModel> expensesModelList = expenses.isNotEmpty ?
     expenses.map((e) => expensesModel.fromMap(e)).toList()
         : [];
     return expensesModelList;
+  }*/
+
+  Future <List<expensesModel>> getExpensesModel() async {
+    Database db = await instance.database;
+    var expenses = await db.query('expenses',columns: ['harcamaId','harcamaAdi','harcamaMiktari','apartmentNo'] , where: 'apartmentNo = ?', whereArgs: [42] );
+    List<expensesModel> result = expenses.isNotEmpty ? expenses.map((e) => expensesModel.fromMap(e)).toList(): [];
+    return  result;
   }
 
   Future<int> add(expensesModel expenses) async {
     Database db = await instance.database;
     return await db.insert('expenses', expenses.toMap());
+  }
+  Future<int> remove(int harcamaId)async {
+    Database db = await instance.database;
+    return await db.rawDelete('DELETE FROM expenses WHERE harcamaId = $harcamaId');
   }
 }

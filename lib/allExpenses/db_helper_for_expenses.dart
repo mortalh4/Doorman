@@ -31,9 +31,11 @@ class databasehelperForExpenses{
     ''');
   }
 
-  Future <List<expensesModel>> getExpensesModel() async {
+  Future <List<expensesModel>> getExpensesModel(int? id) async {
     Database db = await instance.database;
-    var expenses = await db.query('expenses', orderBy: 'harcamaAdi');
+    var expenses = await db.query('expenses', orderBy: 'harcamaAdi', where: 'id = ?',
+        whereArgs: [id]);
+    print(expenses);
     List<expensesModel> expensesModelList = expenses.isNotEmpty ?
     expenses.map((e) => expensesModel.fromMap(e)).toList()
         : [];

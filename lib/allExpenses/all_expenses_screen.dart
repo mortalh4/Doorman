@@ -53,7 +53,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
               child: Container(
                 height: MediaQuery.of(context).size.height*0.60,
                 child: FutureBuilder<List<expensesModel>>(
-                  future: databasehelperForExpenses.instance.getExpensesModel(),
+                  future: databasehelperForExpenses.instance.getExpensesModel(widget.user.id),
                   builder: (BuildContext context, AsyncSnapshot<List<expensesModel>> snapshot){
                     if (!snapshot.hasData){
                       print(snapshot.hasData);
@@ -180,7 +180,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
                       print(expensesName.text );
                       print("********************");
                       await databasehelperForExpenses.instance.add(
-                          expensesModel(harcamaAdi: expensesName.text, harcamaMiktari: expensesValue.text));
+                          expensesModel(harcamaAdi: expensesName.text, harcamaMiktari: expensesValue.text, id: widget.user.id));
                       setState(() {
                         expensesName.clear();
                         expensesValue.clear();

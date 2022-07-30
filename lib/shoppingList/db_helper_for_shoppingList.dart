@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:doorman_app/allExpenses/expenses_model.dart';
 import 'package:doorman_app/shoppingList/item_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-
 class databaseHelperForShoppingList {
   databaseHelperForShoppingList._privateConstructor();
   static final databaseHelperForShoppingList instance = databaseHelperForShoppingList._privateConstructor();
@@ -21,7 +19,6 @@ class databaseHelperForShoppingList {
       onCreate: _onCreate,
     );
   }
-
   Future _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE shoppinglist(
@@ -34,18 +31,36 @@ class databaseHelperForShoppingList {
     ''');
   }
 
-  Future <List<itemModel>> getItemModel() async {
+  Future <List<itemModel>> getItemModel(int? harcamaId) async {
     Database db = await instance.database;
-    var items = await db.query('shoppinglist', orderBy: 'alinacakUrunAdi');
+    var items = await db.query('shoppinglist', orderBy: 'alinacakUrunAdi', where: 'harcamaId = ?',
+        whereArgs: [harcamaId]);
+    print(items);
     List<itemModel> itemModelList = items.isNotEmpty ?
     items.map((e) => itemModel.fromMap(e)).toList()
         : [];
     return itemModelList;
   }
 
+
+
   Future<int> add(itemModel items) async {
     Database db = await instance.database;
     return await db.insert('shoppinglist', items.toMap());
   }
 
+  Future<int> remove(int urunId) async {
+    Database db = await instance.database;
+    return await db.rawDelete('DELETE FROM shoppinglist WHERE urunId = $urunId');
+  }
+
+
 }
+
+
+
+
+
+
+
+

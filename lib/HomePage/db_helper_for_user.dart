@@ -32,7 +32,7 @@ class databaseHelperForUser {
     CREATE TABLE users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     userName TEXT,
-    apartmentNo TEXT
+    apartmentNo TEXT UNIQUE
     )
     ''');
   }
@@ -49,6 +49,10 @@ class databaseHelperForUser {
   Future<int> add(userModel user) async {
     Database db = await instance.database;
     return await db.insert('users', user.toMap());
+  }
+  Future<int> remove(int id)async {
+    Database db = await instance.database;
+    return await db.rawDelete('DELETE FROM users WHERE id = $id');
   }
 
 

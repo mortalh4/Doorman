@@ -1,3 +1,4 @@
+import 'package:doorman_app/allExpenses/expenses_model.dart';
 import 'package:doorman_app/shoppingList/db_helper_for_shoppingList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'item_model.dart';
 
 class addItemDialog extends StatefulWidget {
-
-  const addItemDialog({Key? key}) : super(key: key);
+final expensesModel expenses;
+  const addItemDialog({Key? key, required this.expenses}) : super(key: key);
 
   @override
 
@@ -14,40 +15,58 @@ class addItemDialog extends StatefulWidget {
 }
 
 class _addItemDialogState extends State<addItemDialog> {
+  final formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 300,
-      width: 400,
-      child: Column(
-        children: [
-          Text("Alışveriş listesine malzeme ekle",
-            style: TextStyle(fontWeight: FontWeight.bold),),
+    return Form(
+      key: formkey,
+      child: Container(
+        height: 300,
+        width: 400,
+        child: Column(
+          children: [
+            Text("Alışveriş listesine malzeme ekle",
+              style: TextStyle(fontWeight: FontWeight.bold),),
 
 
-          buildTextField("Alınacak malzemeyi giriniz", itemNameController),
-          buildTextField("Kaç adet/kilo alacağınızı giriniz", itemCountController),
+            _buildTextField("Alınacak malzemeyi giriniz", itemNameController),
+            _buildTextField("Kaç adet/kilo alacağınızı giriniz", itemCountController),
 
-          ElevatedButton(onPressed: ()async{
-            await databaseHelperForShoppingList.instance.add(
-                itemModel(alinacakUrunAdi: itemNameController.text, urunAdedi: itemCountController.text),
-            );
-            setState(() {
-              itemNameController.clear();
-              itemCountController.clear();
-            });
-          }, child: Text("ekle"))
-        ],
+            ElevatedButton(onPressed: ()async{
+              if(formkey.currentState!.validate()){
+                formkey.currentState!.save();
+                print("******");
+                print(itemNameController.text);
+                print("******");
+                await databaseHelperForShoppingList.instance.add(
+                    itemModel(alinacakUrunAdi: itemNameController.text, urunAdedi: itemCountController.text,harcamaId: widget.expenses.harcamaId)
+                );
+                Navigator.of(context).pop();
+
+                setState(() {
+                  itemNameController.clear();
+                  itemCountController.clear();
+                });
+              }
+            }, child: Text("ekle"))
+          ],
+        ),
       ),
     );
   }
   var itemNameController = TextEditingController();
   var itemCountController = TextEditingController();
 
-  Widget buildTextField(String hint, TextEditingController controller) {
+  _buildTextField(String hint, TextEditingController controller) {
     return Container(
       margin: EdgeInsets.all(4),
-      child: TextField(
+      child: TextFormField(
+        validator: (s){
+          if(s == null || s.isEmpty){
+            return "bu alan boş olamaz";
+          }
+          else return null;
+        },
         decoration: InputDecoration(
             labelText: hint,
             border: OutlineInputBorder(

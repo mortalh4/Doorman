@@ -13,9 +13,6 @@ class databasehelperForExpenses{
   Future <Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'expenses.db');
-    print("********************");
-    print('db loc' + path);
-    print("********************");
     return await openDatabase(
       path,
       version: 1,
@@ -38,7 +35,7 @@ class databasehelperForExpenses{
     Database db = await instance.database;
     var expenses = await db.query('expenses', orderBy: 'harcamaAdi', where: 'id = ?',
         whereArgs: [id]);
-    print(expenses);
+    //print(expenses);
     List<expensesModel> expensesModelList = expenses.isNotEmpty ?
     expenses.map((e) => expensesModel.fromMap(e)).toList()
         : [];
@@ -54,3 +51,16 @@ class databasehelperForExpenses{
     return await db.rawDelete('DELETE FROM expenses WHERE harcamaId = $harcamaId');
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

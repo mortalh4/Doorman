@@ -134,6 +134,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
   }
   _buildTextFieldforDouble(TextEditingController controller){
     return TextFormField(
+
       decoration: InputDecoration(
 
         border: Constants.outlineBorderforFORM,
@@ -182,17 +183,19 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
                     padding:  Constants.formPadding,
                     child: IconButton(onPressed: () async {
                       print("********************");
-
-
                       print(expensesValue.text );
                       print(expensesName.text );
                       print("********************");
-                      await databasehelperForExpenses.instance.add(
-                          expensesModel(harcamaAdi: expensesName.text, harcamaMiktari: expensesValue.text, id: widget.user.id));
-                      setState(() {
-                        expensesName.clear();
-                        expensesValue.clear();
-                      });
+                      if(formKey.currentState!.validate()){
+                        formKey.currentState!.save();
+                        await databasehelperForExpenses.instance.add(
+                            expensesModel(harcamaAdi: expensesName.text, harcamaMiktari: expensesValue.text, id: widget.user.id));
+                        setState(() {
+                          expensesName.clear();
+                          expensesValue.clear();
+                        });
+                      }
+
                     }, icon: Constants.rightArrow,
                        // color: Colors.teal,iconSize: 32
                     ),

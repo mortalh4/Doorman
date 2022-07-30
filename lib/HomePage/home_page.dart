@@ -83,8 +83,12 @@ class _homePageState extends State<homePage> {
   Center buildCenter(userModel e) {
     return Center(
                   child: ListTile(
-                    trailing: IconButton(onPressed: (){},
-                    icon: Icon(Icons.edit),color: Constants.appColor,),
+                    trailing: IconButton(onPressed: (){
+                      setState(() {
+                        databaseHelperForUser.instance.remove(e.id!);
+                      });
+                    },
+                    icon: Icon(Icons.delete),color: Constants.appColor,),
                     leading: CircleAvatar(
                       backgroundColor: Constants.appColor,
                       child: Icon(Icons.person),

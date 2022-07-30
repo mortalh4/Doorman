@@ -8,10 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'allExpenses/all_expenses_screen.dart';
+int? initScreen;
 
-void main() {
+Future<void>  main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  initScreen =  await preferences.getInt('initScreen');
+  await preferences.setInt('initScreen', 1); //if already shown -> 1 else 0
+  runApp(const MyApp());
 }
 class MyApp extends StatefulWidget {
   const MyApp();
@@ -21,11 +25,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<bool?>? checkLoginValue() async {
-    SharedPreferences loginCheck = await SharedPreferences.getInstance();
-    bool? alreadyVisited = loginCheck.getBool("alreadyVisited");
-    return alreadyVisited;
-  }
+
 
   // This widget is the root of your application.
   @override
@@ -36,7 +36,17 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FutureBuilder<bool?>(
+      initialRoute: initScreen == 0 || initScreen == null ? 'onboard' : 'home',
+      routes: {
+        'home' : (context) => homePage(),
+        'onboard': (context) => onboardingScreen(),
+      },
+    );
+  }
+}
+
+
+    /*home: FutureBuilder<bool?>(
         future: checkLoginValue(),
         builder: (BuildContext context, AsyncSnapshot<bool?> snapshot) {
 
@@ -46,10 +56,8 @@ class _MyAppState extends State<MyApp> {
             return homePage();
           }
         },
-      ),
-    );
-   }
-}
+      ),*/
+
 
 
 

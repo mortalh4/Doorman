@@ -3,6 +3,7 @@ import 'package:doorman_app/shoppingList/item_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Constants.dart';
 import '../allExpenses/expenses_model.dart';
 import 'add_item_dialog.dart';
 
@@ -26,7 +27,7 @@ class _shoppingListScreenState extends State<shoppingListScreen> {
           context: context,
           builder: (_) {
             return AlertDialog(
-              content: addItemDialog(),
+              content: addItemDialog(expenses: widget.expenses,),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -56,7 +57,7 @@ class _shoppingListScreenState extends State<shoppingListScreen> {
         body: Container(
           height: MediaQuery.of(context).size.height * 0.75,
           child: FutureBuilder<List<itemModel>>(
-            future: databaseHelperForShoppingList.instance.getItemModel(),
+            future: databaseHelperForShoppingList.instance.getItemModel(widget.expenses.harcamaId),
             builder: (BuildContext context, AsyncSnapshot<List<itemModel>> snapshot){
               if (!snapshot.hasData){
                 print(snapshot.hasData);
@@ -84,6 +85,9 @@ class _shoppingListScreenState extends State<shoppingListScreen> {
   Center buildCenter(itemModel e) {
     return Center(
       child: ListTile(
+          trailing: IconButton(onPressed: (){setState(() {
+            databaseHelperForShoppingList.instance.remove(e.urunId!);
+          });},icon: Icon(Icons.delete, color: Constants.appColor,)),
         title: Text(e.alinacakUrunAdi),
         subtitle: Text(e.urunAdedi),
       ),

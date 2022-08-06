@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:doorman_app/Constants.dart';
 
 class showAddedExpenses extends StatelessWidget {
-  double toplamGoster;
+ Future <double> toplamGoster;
+
    showAddedExpenses({Key? key,required this.toplamGoster}) : super(key: key);
 
   @override
@@ -18,7 +19,7 @@ class showAddedExpenses extends StatelessWidget {
 
             ),), ),
           ),
-          Text(toplamGoster > 0? "$toplamGoster":"0",style: Constants.addedExpensesStyle,),
+          Text("$toplamGoster",style: Constants.addedExpensesStyle,),
         ],
       ),
     );

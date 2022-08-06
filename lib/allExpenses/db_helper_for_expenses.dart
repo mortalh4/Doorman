@@ -13,6 +13,7 @@ class databasehelperForExpenses{
   Future <Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'expenses.db');
+
     return await openDatabase(
       path,
       version: 1,
@@ -24,7 +25,8 @@ class databasehelperForExpenses{
     CREATE TABLE expenses(
     harcamaId INTEGER PRIMARY KEY AUTOINCREMENT,
     harcamaAdi TEXT,
-    harcamaMiktari TEXT,
+    harcamaMiktari REAL,
+    createdTime INTEGER,
     id INTEGER,
     FOREIGN KEY(id) REFERENCES users(id)
     )
@@ -34,8 +36,20 @@ class databasehelperForExpenses{
   Future <List<expensesModel>> getExpensesModel(int? id) async {
     Database db = await instance.database;
     var expenses = await db.query('expenses', orderBy: 'harcamaAdi', where: 'id = ?',
-        whereArgs: [id]);
-    //print(expenses);
+        whereArgs: [id] );
+    print("helperdaki expenses tablosu");
+    print(expenses);
+    print("helperdaki expenses tablosu");
+    List<expensesModel> expensesModelList = expenses.isNotEmpty ?
+    expenses.map((e) => expensesModel.fromMap(e)).toList()
+        : [];
+    return expensesModelList;
+  }Future <List<expensesModel>> getExpensesModelForSpecificTime(int? id, int? createdTime) async {
+    Database db = await instance.database;
+    var expenses = await db.rawQuery('SELECT * FROM expenses WHERE id = $id AND createdTime > $createdTime');
+    print("helperdaki rangei olan expenses tablosu");
+    print(expenses);
+    print("helperdaki rangei olan expenses tablosu");
     List<expensesModel> expensesModelList = expenses.isNotEmpty ?
     expenses.map((e) => expensesModel.fromMap(e)).toList()
         : [];
@@ -49,6 +63,22 @@ class databasehelperForExpenses{
   Future<int> remove(int harcamaId)async {
     Database db = await instance.database;
     return await db.rawDelete('DELETE FROM expenses WHERE harcamaId = $harcamaId');
+  }
+  Future sum(int? id) async{
+    Database db = await instance.database;
+    var sum = await db.rawQuery('SELECT SUM(harcamaMiktari) as total FROM expenses WHERE id = $id'  );
+    print("helperdaki sum");
+    print(sum.toList());
+    print("helperdaki sum");
+
+    return sum;
+  }Future sumforSpecificTime(int? id, int? createdTime) async{
+    Database db = await instance.database;
+    var sum = await db.rawQuery('SELECT SUM(harcamaMiktari) as total FROM expenses WHERE id = $id AND createdTime > $createdTime'  );
+    print("helperdaki range belirtilmiş sum");
+    print(sum.toList());
+    print("helperdaki range belirtilmiş sum");
+    return sum;
   }
 }
 

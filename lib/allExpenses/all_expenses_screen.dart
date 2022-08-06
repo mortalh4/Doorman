@@ -87,7 +87,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
   }*/
 
 
-  void sumOfPayments(int? id) async {
+  Future<double> sumOfPayments(int? id) async {
     final DateTime date = DateTime.now();
     int dateTomilliSecond = findCreatedTime(date);
     int oneWeek = dateTomilliSecond-604800000;  // one week has 604 800 000 millisecond. oneWeek variable is represents the date one week before from now
@@ -114,16 +114,12 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
       break;
     }
 
-
-
-
-
-    total = (await databaseHelperForPayment.instance.sum(widget.user.id))[0]['total'];
     if(total > 0){
       setState(() {
         sumOfPaymentValue = total;
       });
     }
+    return total;
   }
 
   @override
@@ -252,7 +248,17 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
                             }
                             return snapshot.data == null ? Text("0"): Text(snapshot.data.toString());
                         });
+  }FutureBuilder<double> buildFutureBuilderforPayment() {
+    return FutureBuilder(future: sumOfPayments(widget.user.id),builder: ( context, snapshot){
+
+                            if(!snapshot.hasData){
+                              return  Text("yükleniyor");
+                            }
+                            return snapshot.data == null ? Text("0"): Text(snapshot.data.toString());
+                        });
   }
+
+
   Future <List<expensesModel>> filterForList(String selectedValue){
     final DateTime date = DateTime.now();
     int dateTomilliSecond = findCreatedTime(date);
@@ -379,7 +385,7 @@ class _allExpensesScreenState extends State<allExpensesScreen> {
 
               }
               ,icon:Constants.rightArrow, ),),
-              Expanded(flex: 1, child:  Text("$sumOfPaymentValue"),)
+              Expanded(flex: 1, child:  buildFutureBuilderforPayment(),)
 
 
             ],

@@ -10,8 +10,12 @@ The user can see the information about all the data. For example how much money 
 *After installing Flutter SDK, don't forget to download dart and flutter plugins through the code editor you use.  
 *On the top right corner Fork the project and after that click on the green button representing to download the code.  
 *Open terminal on Vscode or Android Studio and type  
-$ git clone https://github.com/mortalh4/Doorman   
+```
+$ git clone https://github.com/mortalh4/Doorman  
+```
 *Connect the device and type  
+```
 $ flutter run   
+```
 *Wait for installment
 *If you want to install the application on the android phone, the Apk file is located in the Doorman>build>app>outputs>flutter-apk folder.  

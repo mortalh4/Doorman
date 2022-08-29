@@ -49,7 +49,7 @@ class _homePageState extends State<homePage> {
         appBar: AppBar(
 
           backgroundColor: Constants.appColor,
-          title: Center(child: Text('Home Page',style: Constants.pageHeader,)),
+          title: Center(child: Text('Residents',style: Constants.pageHeader,)),
         ),
         body: Container(
           height: MediaQuery.of(context).size.height * 0.75,
